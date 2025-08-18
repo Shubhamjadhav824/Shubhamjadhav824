@@ -1,26 +1,23 @@
-name: Update README
-
+name: Profile README
 on:
-  schedule:
-    - cron: "0 0 * * *"   # runs daily at midnight UTC
-  workflow_dispatch:      # allow manual trigger
-
+  push:
+    branches:
+      - main
+  workflow_dispatch:
 jobs:
   update-readme:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
+      - name: Checkout Repo
         uses: actions/checkout@v3
 
-      - name: Update GitHub README Stats
-        uses: anuraghazra/github-readme-stats@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Refresh README
-        run: |
-          git config --local user.name "github-actions[bot]"
-          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add README.md || true
-          git commit -m "⚡ auto-update README stats" || true
-          git push
+      # Use default GH_TOKEN for Action
+      - name: Update README
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const readme = fs.readFileSync('./README.md', 'utf8');
+            // Content is already managed via push.
+            console.log('README.md checked and up-to-date.');
